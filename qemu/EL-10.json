@@ -9,7 +9,7 @@
     "iso_urls": "https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.0-x86_64-minimal.iso",
     "iso_checksum": "de75c2f7cc566ea964017a1e94883913f066c4ebeb1d356964e398ed76cadd12",
     "headless": "false",
-    "config_file": "el-10-packer-ks.cfg",
+    "config_file": "rocky-10-packer-ks.cfg",
     "ssh_username": "root",
     "ssh_password": "packer"
   },
@@ -31,6 +31,10 @@
         [
           "-smp",
           "{{user `cpu`}}"
+        ],
+        [
+          "-cpu",
+          "host,migratable=on"
         ]
       ],
       "ssh_wait_timeout": "30m",
@@ -41,8 +45,14 @@
       "iso_checksum": "{{user `iso_checksum`}}",
       "boot_wait": "8s",
       "boot_command": [
-        "<tab><wait><wait><wait> net.ifnames=0 biosdevname=0 inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/http/{{user `config_file` }}",
-	"<enter><wait>"
+        "<up><wait>e<wait><down><down><wait><right><right><right><right><right><right><right><right><right><right>",
+        "<right><right><right><right><right><right><right><right><right><right><right><right><right><right><right>",
+        "<right><right><right><right><right><right><right><right><right><right><right><right><right><right><right>",
+        "<right><right><right><right><right><right><right><right><right><right><right><right><right><right><right>",
+        "<right><right><right><right><right><right><right><right><right><right><right><right><right><right><right>",
+        "<right><right><right><right><right><right><right><right><right><bs><bs><bs><bs><bs>",
+	" ip=dhcp inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/http/{{user `config_file` }}",
+	"<wait><f10>"
       ],
       "disk_size": "{{user `disk_size`}}",
       "disk_discard": "unmap",
