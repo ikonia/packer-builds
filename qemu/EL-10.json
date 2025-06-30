@@ -1,0 +1,55 @@
+{
+  "variables": {
+    "cpu": "2",
+    "ram": "4096",
+    "name": "rocky",
+    "disk_size": "10G",
+    "version": "10",
+    "iso_checksum_type": "sha256",
+    "iso_urls": "https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.0-x86_64-minimal.iso",
+    "iso_checksum": "de75c2f7cc566ea964017a1e94883913f066c4ebeb1d356964e398ed76cadd12",
+    "headless": "false",
+    "config_file": "el-10-packer-ks.cfg",
+    "ssh_username": "root",
+    "ssh_password": "packer"
+  },
+  "builders": [
+    {
+      "name": "{{user `name`}}{{user `version`}}",
+      "type": "qemu",
+      "format": "raw",
+      "accelerator": "kvm",
+      "qemu_binary": "/usr/bin/qemu-kvm",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "disk_cache": "none",
+      "qemuargs": [
+        [
+          "-m",
+          "{{user `ram`}}M"
+        ],
+        [
+          "-smp",
+          "{{user `cpu`}}"
+        ]
+      ],
+      "ssh_wait_timeout": "30m",
+      "http_directory": ".",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "iso_urls": "{{user `iso_urls`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "boot_wait": "8s",
+      "boot_command": [
+        "<tab><wait><wait><wait> net.ifnames=0 biosdevname=0 inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/http/{{user `config_file` }}",
+	"<enter><wait>"
+      ],
+      "disk_size": "{{user `disk_size`}}",
+      "disk_discard": "unmap",
+      "disk_compression": false,
+      "headless": "{{user `headless`}}",
+      "shutdown_command": "sudo /usr/sbin/shutdown -h now",
+      "output_directory": "artifacts/qemu/{{user `name`}}{{user `version`}}"
+    }
+  ]
+}
